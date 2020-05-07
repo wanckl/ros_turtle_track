@@ -58,14 +58,16 @@ int main(int argc, char **argv)
                         angle = 3*half_pi + atan((turtle1_pose.x-turtle2_pose.x)/(turtle2_pose.y-turtle1_pose.y));
                     }
                 }
-                aim.linear.x = 2.0;
+                aim.linear.x = sqrt(pow(turtle1_pose.x-turtle2_pose.x, 2) + pow(turtle1_pose.y-turtle2_pose.y, 2));
                 aim.angular.z = angle - turtle2_pose.theta;
                 if(2*half_pi<aim.angular.z)
                     aim.angular.z = aim.angular.z - 4*half_pi;
                 else if(-2*half_pi>aim.angular.z)
                     aim.angular.z = 4*half_pi + aim.angular.z;
+                if(aim.linear.x<0.1)
+                    aim.linear.x = 0;
                 track_pub.publish(aim);
-                ROS_INFO("self_z: %.2f\tcor_agl: %.2f\tcalc:%.2f", turtle2_pose.theta, angle, aim.angular.z);
+                ROS_INFO("calc:%.2f\tpath:%.2f", aim.angular.z, aim.linear.x);
                 loop_rate.sleep();
             }
         }
